@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://raa145901-blip.github.io/sitemap.xml
