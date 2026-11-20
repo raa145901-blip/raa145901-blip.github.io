@@ -30,6 +30,8 @@
     .stat{width:50%}.stat b{display:block;color:var(--navy);font:25px Georgia,serif}.stat span{display:block;color:var(--muted);font-size:11px;line-height:1.55;margin-top:5px}
     .primary{display:flex;align-items:center;justify-content:center;gap:12px;min-height:60px;background:var(--gold);color:#13273b;font-size:15px;font-weight:800;padding:13px 16px;transition:filter .18s}
     .primary:hover{filter:brightness(1.06)}
+    button.primary{width:100%;border:0;font-family:inherit;cursor:pointer;-webkit-appearance:none;appearance:none}
+    button.primary:focus-visible{outline:3px solid #987a51;outline-offset:3px}
     .primary svg{width:20px;height:20px}
     .hint{font-size:11px;color:#7d858d;text-align:center;line-height:1.55;margin:10px 0 21px}
     .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
@@ -58,11 +60,11 @@
   </header>
   <section class="content" aria-label="Контактная информация">
     <div class="stats"><div class="stat"><b>15+ лет</b><span>опыта в HR</span></div><div class="stat"><b>1000+</b><span>лично закрытых вакансий</span></div></div>
-    <a class="primary" href="./ksenia-varlygina.vcf" download="Ksenia_Varlygina.vcf" type="text/vcard" aria-label="Скачать контакт Ксении Варлыгиной">
+    <button class="primary" id="saveContact" type="button" aria-label="Сохранить контакт Ксении Варлыгиной">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 18v3h14v-3"/></svg>
       Сохранить контакт
-    </a>
-    <p class="hint">Файл контакта для iPhone и Android</p>
+    </button>
+    <p class="hint" id="contactHint" role="status" aria-live="polite">Открывает меню сохранения контакта на телефоне</p>
     <div class="actions">
       <a class="action" href="tel:+79059158595" aria-label="Позвонить Ксении Варлыгиной"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h3l2 5-2.5 2.5a16 16 0 0 0 4 4L16 12l5 2v3a4 4 0 0 1-4 4C9.3 20.7 3.3 14.7 3 7a4 4 0 0 1 4-4Z"/></svg>Позвонить</a>
       <a class="action" href="mailto:Hyundai2009@yandex.ru?subject=%D0%97%D0%B0%D0%BF%D1%80%D0%BE%D1%81%20%D0%BD%D0%B0%20%D0%BF%D0%BE%D0%B4%D0%B1%D0%BE%D1%80" aria-label="Написать письмо Ксении Варлыгиной"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>Написать</a>
@@ -75,17 +77,38 @@
   </section>
   <footer class="footer">Ксения Варлыгина · HR-консультант<br><a href="https://raa145901-blip.github.io/">Перейти на основной сайт</a></footer>
 </main>
+<script>
+  (function () {
+    'use strict';
+    const vcard = "BEGIN:VCARD\r\nVERSION:3.0\r\nN:Варлыгина;Ксения;Викторовна;;\r\nFN:Ксения Викторовна Варлыгина\r\nORG:HR-консультант\r\nTITLE:Подбор руководителей и специалистов\r\nTEL;TYPE=CELL,VOICE:+79059158595\r\nEMAIL;TYPE=INTERNET:Hyundai2009@yandex.ru\r\nURL:https://raa145901-blip.github.io/\r\nNOTE:Подбор персонала для бизнеса. Более 15 лет опыта в HR.\r\nEND:VCARD\r\n";
+    const saveButton = document.getElementById('saveContact');
+    const hint = document.getElementById('contactHint');
+    const filename = 'Ksenia_Varlygina.vcf';
+    saveButton.addEventListener('click', async function () {
+      const file = new File([vcard], filename, { type: 'text/vcard' });
+      // On supported iPhones, the native share sheet can pass the vCard to Contacts.
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] });
+          hint.textContent = 'В меню «Поделиться» выберите «Контакты» или «Сохранить в Файлы», затем откройте карточку контакта.';
+          return;
+        } catch (error) {
+          if (error && error.name === 'AbortError') return;
+          // Fall through to file download for unsupported share targets.
+        }
+      }
+      // Fallback: create a VCF file in memory instead of navigating to a text VCF page.
+      const blobUrl = URL.createObjectURL(new Blob([vcard], { type: 'text/vcard;charset=utf-8' }));
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      hint.textContent = 'Если файл скачался, откройте его в «Файлах» и выберите «Создать новый контакт». Если открылся текст, используйте «Поделиться» → «Контакты».';
+      setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 30000);
+    });
+  }());
+</script>
 </body>
 </html>
-
-BEGIN:VCARD
-VERSION:3.0
-N:Варлыгина;Ксения;Викторовна;;
-FN:Ксения Викторовна Варлыгина
-ORG:HR-консультант
-TITLE:Подбор руководителей и специалистов
-TEL;TYPE=CELL,VOICE:+79059158595
-EMAIL;TYPE=INTERNET:Hyundai2009@yandex.ru
-URL:https://raa145901-blip.github.io/
-NOTE:Подбор персонала для бизнеса. Более 15 лет опыта в HR.
-END:VCARD
