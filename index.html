@@ -62,6 +62,59 @@
   .hero-art .art-caption span{margin-top:2px}
   .hero .wrap{gap:16px}
 }
+
+/* Final iPhone fix: caption is a separate block below the portrait. */
+@media screen and (max-width:740px){
+  .hero .hero-art{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    height:auto;
+    min-height:0;
+    overflow:visible;
+    gap:14px;
+  }
+  .hero .hero-art > .art-frame{
+    position:relative;
+    display:block;
+    flex:0 0 auto;
+    width:min(100%,330px);
+    max-width:100%;
+    margin:0;
+  }
+  .hero .hero-art > .art-caption{
+    position:static !important;
+    inset:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    display:block;
+    flex:0 0 auto;
+    align-self:center;
+    width:min(100%,330px);
+    max-width:100%;
+    box-sizing:border-box;
+    margin:0;
+    padding:13px 15px;
+    border:1px solid #d8d2c8;
+    background:var(--cream);
+    color:var(--navy);
+    box-shadow:none;
+    z-index:auto;
+  }
+  .hero .hero-art .art-line{
+    bottom:10px;
+    left:10px;
+    padding:4px 7px;
+    background:rgba(18,36,58,.84);
+    color:#fff;
+    font-size:9px;
+    letter-spacing:.08em;
+    max-width:calc(100% - 20px);
+    line-height:1.4;
+  }
+}
 </style>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
